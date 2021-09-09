@@ -10,3 +10,4 @@
 - FluentValidator
 - MediatR
 - Docker
+- Dapper
