@@ -1,12 +1,13 @@
 ﻿namespace Loja.Domain.Clientes.Commands
 {
     using Loja.Domain.Clientes.Validations;
+    using Loja.Domain.Core.Extension;
 
     public class ClienteCreateCommand : ClienteCommand
     {
         public ClienteCreateCommand(string cpf, string nome, string email)
         {
-            Cpf = cpf;
+            Cpf = cpf.OnlyNumbers();
             Nome = nome;
             Email = email;
         }

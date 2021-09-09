@@ -36,11 +36,18 @@
             return Response(await _clienteAppService.Delete(id).ConfigureAwait(false));
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetAll(int pageSize, int pageIndex)
         {
-            return Response(await _clienteAppService.Get(id).ConfigureAwait(false));
+            return Response(await _clienteAppService.GetAll(pageSize, pageIndex).ConfigureAwait(false));
+        }
+
+        [HttpGet("{cpf}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByCpf(string cpf)
+        {
+            return Response(await _clienteAppService.Get(cpf).ConfigureAwait(false));
         }
     }
 }

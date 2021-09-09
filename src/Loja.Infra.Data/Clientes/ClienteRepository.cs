@@ -1,46 +1,78 @@
 ﻿namespace Loja.Infra.Data.Clientes
 {
+    using Dapper;
     using Loja.Domain.Core.Models;
     using Loja.Domain.Core.Repositories;
-    using System.Collections.Generic;
-    using System.Linq;
+    using Loja.Infra.Data.Contracts;
+    using System;
     using System.Threading.Tasks;
 
     public class ClienteRepository : IClienteRepository
     {
-        private readonly static Dictionary<int, Cliente> _clientes = new Dictionary<int, Cliente>();
-        private static int id;
+        private readonly ICommandConnection _commandConnection;
 
-        public void Add(Cliente entity)
+        public ClienteRepository(ICommandConnection commandConnection)
         {
-            entity.Id = ++id;
-            _clientes.Add(entity.Id, entity);
+            _commandConnection = commandConnection;
         }
 
-        public void Delete(int id)
+        public async Task<int> Add(Cliente entity)
         {
-            _clientes.Remove(id);
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            using (var conn = _commandConnection.Create())
+            {
+                var command = @"INSERT INTO Cliente (Cpf, Nome, Email) VALUES (@Cpf, @Nome, @Email);";
+                return await conn.ExecuteAsync(command, entity);
+            }
         }
 
-        public void Update(int id, string nome, string email)
+        public async Task<int> Delete(int id)
         {
-            _clientes[id].Nome = nome;
-            _clientes[id].Email = email;
+            using (var conn = _commandConnection.Create())
+            {
+                var command = @"DELETE Cliente WHERE Id = @Id;";
+                return await conn.ExecuteAsync(command, new { id });
+            }
         }
 
-        public bool Exist(int id)
+        public async Task<int> Update(int id, string nome, string email)
         {
-            return _clientes.ContainsKey(id);
+            using (var conn = _commandConnection.Create())
+            {
+                var command = @"UPDATE Cliente SET Nome = @Nome, Email = @Email WHERE Id = @Id;";
+                return await conn.ExecuteAsync(command, new { Nome = nome, Email = email, Id = id });
+            }
         }
 
-        public bool Exist(string cpf)
+        public async Task<bool> Exist(int id)
         {
-            return _clientes.FirstOrDefault(c => c.Value.Cpf == cpf).Key > 0;
+            using (var conn = _commandConnection.Create())
+            {
+                var query = @"SELECT Count(1) FROM Cliente WHERE Id = @Id;";
+                return await conn.QueryFirstOrDefaultAsync<bool>(query, new { id }) ;
+            }
         }
 
-        public Cliente Get(int id)
+        public async Task<bool> Exist(string cpf)
         {
-            return _clientes.GetValueOrDefault(id);
+            using (var conn = _commandConnection.Create())
+            {
+                var query = @"SELECT Count(1) FROM Cliente WHERE Cpf = @Cpf;";
+                return await conn.QueryFirstOrDefaultAsync<bool>(query, new { cpf });
+            }
+        }
+
+        public async Task<Cliente> Get(int id)
+        {
+            using (var conn = _commandConnection.Create())
+            {
+                var query = @"SELECT Id, Nome, Cpf, Email FROM Cliente WHERE Id = @Id;";
+                return await conn.QueryFirstOrDefaultAsync<Cliente>(query, new { id });
+            }
         }
     }
 }

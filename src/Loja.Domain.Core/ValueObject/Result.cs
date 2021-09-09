@@ -28,10 +28,24 @@
             return new Result<TResult>(result);
         }
 
+        public static Result<TResult> Failed<TResult>(string error)
+        {
+            var result = new Result<TResult>();
+            result.Add(new ValidationFailure(string.Empty, error));
+            return result;
+        }
+
         public static Result Failed(params ValidationFailure[] failures)
         {
             var result = new Result();
             result.Add(failures);
+            return result;
+        }
+
+        public static Result Failed(string error)
+        {
+            var result = new Result();
+            result.Add(new ValidationFailure(string.Empty, error));
             return result;
         }
 
@@ -52,9 +66,12 @@
     public class Result<TValue> : Result
     {
         public Result(TValue value)
-            :base()
         {
             Value = value;
+        }
+
+        public Result()
+        {
         }
 
         public TValue Value { get; }

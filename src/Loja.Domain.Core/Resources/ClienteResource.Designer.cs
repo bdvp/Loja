@@ -61,6 +61,24 @@ namespace Loja.Domain.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cliente não encontrado..
+        /// </summary>
+        public static string ClienteNotFound {
+            get {
+                return ResourceManager.GetString("ClienteNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ocorreu um erro inesperado ao {0} o cliente..
+        /// </summary>
+        public static string ExceptionUnexpectedly {
+            get {
+                return ResourceManager.GetString("ExceptionUnexpectedly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cliente ID é obrigatório..
         /// </summary>
         public static string IdRequired {

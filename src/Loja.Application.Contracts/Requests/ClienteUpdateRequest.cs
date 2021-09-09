@@ -7,8 +7,6 @@ namespace Loja.Application.Contracts.Requests
         [Required]
         public int Id { get; set; }
 
-        public string Cpf { get; set; }
-
         [Required]
         public string Nome { get; set; }
 

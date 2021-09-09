@@ -4,6 +4,7 @@
     using Loja.Domain.Clientes.Commands;
     using Loja.Domain.Core.Handlers;
     using Loja.Domain.Core.Repositories;
+    using Loja.Domain.Core.Resources;
     using Loja.Domain.Core.ValueObject;
     using System;
     using System.Threading;
@@ -27,21 +28,24 @@
                     return await Task.FromResult(Result.Failed(command.ValidationResult.Errors.ToArray()));
                 }
 
-                if (!_clienteRepository.Exist(command.Id))
+                if (! await _clienteRepository.Exist(command.Id))
                 {
-                    var msg = $"Cliente não encontrado.";
-                    return await Task.FromResult(Result.Failed(new ValidationFailure(string.Empty, msg)));
+                    return await Task.FromResult(Result.Failed(new ValidationFailure(string.Empty, ClienteResource.ClienteNotFound)));
                 }
 
-                _clienteRepository.Update(command.Id, command.Nome, command.Email);
+                if (await _clienteRepository.Update(command.Id, command.Nome, command.Email) == 0)
+                {
+                    var msg = $"Ocorreu um erro na atualização do cliente: {command.Email}";
+                    return await Task.FromResult(Result.Failed(msg));
+                };
 
                 return await Task.FromResult(Result.Success());
             }
             catch (Exception e)
             {
                 // TODO : implementar NOTIFICATION para exception
-                var msg = $"Ocorreu um erro inesperado ao atualizar o cliente.";
-                return await Task.FromResult(Result.Failed(new ValidationFailure(string.Empty, msg)));
+                var msg = string.Format(ClienteResource.ExceptionUnexpectedly, "atualizar");
+                return await Task.FromResult(Result.Failed(msg));
             }
         }
     }

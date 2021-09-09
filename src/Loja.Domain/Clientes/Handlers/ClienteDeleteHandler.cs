@@ -6,7 +6,7 @@
     using Loja.Domain.Core.ValueObject;
     using System.Threading;
     using System.Threading.Tasks;
-    using FluentValidation.Results;
+    using Loja.Domain.Core.Resources;
 
     public class ClienteDeleteHandler : IHandler<ClienteDeleteCommand>
     {
@@ -17,23 +17,23 @@
             _clienteRepository = clienteRepository;
         }
 
-        public Task<Result> Handle(ClienteDeleteCommand command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(ClienteDeleteCommand command, CancellationToken cancellationToken)
         {
             try
             {
                 if (!command.IsValid())
                 {
-                    return Task.FromResult(Result.Failed(command.ValidationResult.Errors.ToArray()));
+                    return await Task.FromResult(Result.Failed(command.ValidationResult.Errors.ToArray()));
                 }
 
-                _clienteRepository.Delete(command.Id);
-                return Task.FromResult(Result.Success());
+                await _clienteRepository.Delete(command.Id);
+                return await Task.FromResult(Result.Success());
             }
             catch (System.Exception e)
             {
                 // TODO : implementar NOTIFICATION para exception
-                var msg = $"Ocorreu um erro inesperado ao excluir o cliente.";
-                return Task.FromResult(Result.Failed(new ValidationFailure(string.Empty, msg)));
+                var msg = string.Format(ClienteResource.ExceptionUnexpectedly, "atualizar");
+                return await Task.FromResult(Result.Failed(msg));
             }
         }
     }

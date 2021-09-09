@@ -39,6 +39,7 @@ namespace Loja.Service.Api.Cliente
             services.AddSwaggerConfiguration(_apiName);
             services.AddMediatR(typeof(Startup));
             services.AddInjectorConfiguration();
+            services.AddDataBaseConfiguration();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

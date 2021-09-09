@@ -5,16 +5,16 @@
 
     public interface IClienteRepository
     {
-        Cliente Get(int id);
+        Task<Cliente> Get(int id);
 
-        void Add(Cliente entity);
+        Task<int> Add(Cliente entity);
 
-        void Update(int id, string nome, string email);
+        Task<int> Update(int id, string nome, string email);
 
-        void Delete(int id);
+        Task<int> Delete(int id);
 
-        bool Exist(int id);
+        Task<bool> Exist(int id);
 
-        bool Exist(string cpf);
+        Task<bool> Exist(string cpf);
     }
 }
